@@ -7,7 +7,7 @@ const { initializeSeats } = require('./controllers/seatController');
 
 const app = express();
 app.use(cors({
-  origin: 'https://train-seat-reservation-system.vercel.app/', // Allow requests only from your frontend domain
+  origin: '*', // Allow requests only from your frontend domain
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 // Config dotenv and connect to MongoDB
