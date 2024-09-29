@@ -1,0 +1,62 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background-color: yellow;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+    opacity: 1; /* Set initial opacity */
+    transform: translateX(0); /* Set initial transform */
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  }
+  
+  .modal-success {
+    background-color: #28a745; /* Green background for success */
+    color: white;
+    animation: slide-in-right 0.5s forwards; /* Apply animation */
+  }
+  
+  .modal-error {
+    background-color: yellow; /* Yellow background for error */
+    color: black;
+    animation: slide-in-right 0.5s forwards; /* Apply animation */
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .modal-content {
+    margin: 10px 0;
+  }
+  
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  

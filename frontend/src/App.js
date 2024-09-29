@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 // import Seat from "./components/Seat";
+import Modal from "./components/Modal";
 import "./App.css";
 
 const App = () => {
@@ -8,6 +9,9 @@ const App = () => {
   const [numSeats, setNumSeats] = useState(0);
   const [bookedSeats, setBookedSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState(""); 
+  const [modalType, setModalType] = useState("error");
 
   useEffect(() => {
     const fetchSeats = async () => {
@@ -29,24 +33,44 @@ const App = () => {
   };
 
   const handleBooking = async () => {
+    // Check if no seats are selected
     if (selectedSeats.length === 0) {
-      alert("Please select at least one seat to book.");
-      return;
+      setModalMessage("Please select at least one seat to book.");
+      setModalType("error");
+      setShowModal(true);  // Ensure this is set to true to display the modal
+      return; // Make sure the function stops here if no seats are selected
     }
+  
+    try {
+      // Proceed with booking if seats are selected
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_BASEURL}/api/seats/book`, {
+        numSeats: selectedSeats.length,
+        seatNumbers: selectedSeats,
+      });
+  
+      if (response.data.bookedSeats) {
+        setBookedSeats([...bookedSeats, ...response.data.bookedSeats]);
+        setSelectedSeats([]); // Clear selected seats after booking
+  
+        // Trigger success modal
+        setModalMessage("Your seat is booked. Please refresh the page to confirm.");
+        setModalType("success");
+        setShowModal(true);
 
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_BASEURL}/api/seats/book`, {
-      numSeats: selectedSeats.length, // Use the length of selected seats
-      seatNumbers: selectedSeats, // Send the specific seat numbers
-    });
-
-    // Update bookedSeats after successful booking
-    if (response.data.bookedSeats) {
-      setBookedSeats([...bookedSeats, ...response.data.bookedSeats]);
-      setSelectedSeats([]); // Clear selected seats after booking
-    } else {
-      console.error("Booking failed:", response.data.message);
+        setTimeout(() => {
+          window.location.reload(); // Refresh the page
+        }, 3000);
+      } else {
+        console.error("Booking failed:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
     }
   };
+  console.log("Selected Seats:", selectedSeats);
+  console.log("Show Modal:", showModal);
+    
+  const closeModal = () => setShowModal(false);
   const availableSeats = seats.filter((seat) => !seat.booked);
 
   return (
@@ -112,6 +136,16 @@ const App = () => {
         ))}
       </ul>
     </div>
+     {/* Modal */}
+     {showModal && (
+  <Modal
+    message={modalMessage}
+    onClose={closeModal}
+    type={modalType}  // Pass the modal type (success or error)
+  />
+)}
+
+
   </div>
 );
 };
